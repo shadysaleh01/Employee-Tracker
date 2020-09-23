@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/shadysaleh01/Note-Tracker#readme",
   "dependencies": {
+    "inquirer": "^7.3.3",
     "mysql": "^2.18.1"
   }
 }

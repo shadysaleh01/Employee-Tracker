@@ -20,6 +20,9 @@
    - What is the employee's manager?
    [All manger, None]
 
+--Add Department
+
+--Add role
 
 -- Remove Employee
    - Which employee do you want to remove?
@@ -36,10 +39,10 @@
 
 
 --View All roles
---Add role
+
 --Remove role
 --View All Departments
---Add Department
+
 --Remove Department
 --quit
    -Goodbye!
