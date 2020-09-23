@@ -1,0 +1,45 @@
+#What would you like to do?
+-- View All Employees 
+   (id, first_name, last_name, title, department, salary, manager)
+
+-- View All Employees By Department
+   - Which department would you like to see Employees?
+   [Engineering, finance, legal]
+   (first_name, last_name, title)
+
+-- View All Employees By Manager
+   - Which Employee do you want to see direct reports for?
+   [All manager]
+   (id, first_name, last_name, department, title)
+
+-- Add Employee
+   - What is the Employee's first name? 
+   - What is the Employee's last name?
+   - What is the employee's role?
+   [Sales Lead, Salesperson, Lead Engineer, Software Engineer, Accountant, legal]
+   - What is the employee's manager?
+   [All manger, None]
+
+
+-- Remove Employee
+   - Which employee do you want to remove?
+   [All employee]
+
+-- Update Employee Role
+   - Which employee's role do you want to update?
+   [All Employees]
+   - Which role do you want to assign the selected employee?
+   [All roles]
+
+-- Update Employee Manager
+
+
+
+--View All roles
+--Add role
+--Remove role
+--View All Departments
+--Add Department
+--Remove Department
+--quit
+   -Goodbye!
