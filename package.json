@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/shadysaleh01/Note-Tracker/issues"
   },
-  "homepage": "https://github.com/shadysaleh01/Note-Tracker#readme"
+  "homepage": "https://github.com/shadysaleh01/Note-Tracker#readme",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
 }
