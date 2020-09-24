@@ -51,7 +51,7 @@ function start() {
    ).then(answer => {
       switch (answer.choice) {
          case "View all employees":
-            allEmployees()
+            byEmployee()
             break;
          case "View all employees by department":
             byDepartment()
@@ -81,7 +81,7 @@ function start() {
    })
 }
 
-function allEmployees() {
+function byEmployee() {
 
    connection.query("SELECT * FROM employee", (err, res) => {
       if (err) throw err
@@ -169,6 +169,7 @@ function departmentTable() {
    connection.query("SELECT d_name FROM department;", (err, res) => {
       if (err) throw err
       console.table(res)
+      start()
    })
 }
 
@@ -220,10 +221,29 @@ function roleTable() {
    connection.query("SELECT title, salary, department_id FROM role ;", (err, res) => {
       if (err) throw err
       console.log(res)
+      start()
    })
 }
 
-function removeEmployee() { }
+function removeEmployee() {
+   inquirer.prompt([
+      {
+         name: "first",
+         type: "input",
+         message: "Please Enter The Employee First Name"
+      },
+      {
+         name: "last",
+         type: "input",
+         message: "Please Enter The Employee Last Name"
+      }
+   ]).then((answer) => {
+      connection.query("DELETE FROM employee WHERE first_name = ?, last_name = ? ", [answer.first, answer.last], (err, res) => {
+         if (err) throw err
+      })
+      byEmployee()
+   })
+}
 
 function updateEmployeeRole() { }
 
