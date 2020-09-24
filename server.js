@@ -143,9 +143,36 @@ function addEmployee() {
    })
 }
 
-
-function addRole() {
+function addDepartment() {
+   inquirer.prompt(
+      {
+         name: "department",
+         type: "input",
+         message: "Please Enter The Department You Would Like To Add?",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      }
+   ).then((answer) => {
+      connection.query("INSERT INTO department SET ?", [answer.department], (err, data) => {
+         if (err) throw err
+      })
+      departmentTable()
+      start()
+   })
 }
+
+function departmentTable() {
+   connection.query("SELECT d_name FROM department", (err, res) => {
+      if (err) throw err
+      console.table(res)
+   })
+}
+
+function addRole() { }
 
 function removeEmployee() { }
 
