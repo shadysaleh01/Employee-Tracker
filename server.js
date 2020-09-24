@@ -245,7 +245,25 @@ function removeEmployee() {
    })
 }
 
-function updateEmployeeRole() { }
+function updateEmployeeRole() {
+   inquirer.prompt([
+      {
+         name: "employee",
+         type: "input",
+         message: "Please Enter The Employee ID"
+      },
+      {
+         name: "role",
+         type: "input",
+         message: "Please Enter The Role ID"
+      }
+   ]).then((answer) => {
+      connection.query("UPDATE emoployee SET role_id= ? WHERE id=?", [answer.role, answer.employee], (err, res) => {
+         if (err) throw err
+      })
+      byEmployee()
+   })
+}
 
 function updateEmployeeManager() { }
 
