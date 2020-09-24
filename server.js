@@ -216,7 +216,12 @@ function addRole() {
    })
 }
 
-
+function roleTable() {
+   connection.query("SELECT title, salary, department_id FROM role ;", (err, res) => {
+      if (err) throw err
+      console.log(res)
+   })
+}
 
 function removeEmployee() { }
 
