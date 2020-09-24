@@ -1,4 +1,4 @@
-use employee_tracker;
+USE employee_tracker;
 
 INSERT INTO department
    (d_name)
@@ -23,11 +23,11 @@ VALUES
 INSERT INTO employee
    (first_name, last_name, role_id, manager_id)
 VALUES
-   ('Hadell', 'Ghra', 1, NULL),
+   ('Hadeel', 'Ghra', 1, 1),
    ('Saad', 'Zaghloul', 2, 1),
-   ('Stevie', 'Nicks', 3, NULL),
+   ('Stevie', 'Nicks', 3, 1),
    ('Shady', 'Saleh', 4, 3),
-   ('Ahmed', 'Shalaby', 5, NULL),
+   ('Ahmed', 'Shalaby', 5, 1),
    ('Arow', 'Hasona', 6, 5),
-   ('Mike', 'Roger', 7, NULL),
+   ('Mike', 'Roger', 7, 1),
    ('Keaten', 'Geabe', 8, 7);
