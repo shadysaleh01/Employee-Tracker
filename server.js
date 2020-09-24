@@ -166,13 +166,57 @@ function addDepartment() {
 }
 
 function departmentTable() {
-   connection.query("SELECT d_name FROM department", (err, res) => {
+   connection.query("SELECT d_name FROM department;", (err, res) => {
       if (err) throw err
       console.table(res)
    })
 }
 
-function addRole() { }
+function addRole() {
+   inquirer.prompt([
+      {
+         type: "input",
+         name: "title",
+         message: "Please Enter The Role's Title.",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+
+      },
+      {
+         type: "input",
+         name: "salary",
+         message: "Please Enter The Role's Salary.",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      },
+      {
+         type: "input",
+         name: "department",
+         message: "Please Enter The Role's Department ID.",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      }
+   ]).then((answer) => {
+      connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, answer.department], (err, res) => {
+         if (err) throw err
+      })
+      roleTable()
+   })
+}
+
+
 
 function removeEmployee() { }
 
