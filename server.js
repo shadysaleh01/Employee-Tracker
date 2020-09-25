@@ -145,9 +145,28 @@ function ViewAllRoles() {
    })
 }
 function ViewAllEmployees() {
+   connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.d_name FROM employee JOIN role ON role_id = role.id JOIN department ON department_id = department.id", (err, res) => {
+      if (err) throw err
 
+      var table = new Table({
+         head: ['ID', 'First Name', 'Last Name', 'Title', 'Salary', 'Department']
+         , style: {
+            'padding-left': 1
+            , 'padding-right': 1
+            , head: []
+            , border: []
+         }
+         , colWidths: [7, 15, 15, 22, 12, 18]
+      });
 
-
+      for (let i = 0; i < res.length; i++) {
+         let data = []
+         data.push(res[i].id, res[i].first_name, res[i].last_name, res[i].title, res[i].salary, res[i].d_name)
+         table.push(data)
+      }
+      console.log(table.toString())
+      start()
+   })
 }
 
 function byDepartment() {
@@ -163,25 +182,7 @@ function byManager() { }
 
 
 function addDepartment() {
-   inquirer.prompt(
-      {
-         name: "department",
-         type: "input",
-         message: "Please Enter The Department You Would Like To Add?",
-         validate: answer => {
-            if (answer !== "") {
-               return true;
-            }
-            return "Please enter at least one character.";
-         }
-      }
-   ).then((answer) => {
-      connection.query("INSERT INTO department SET ?", [answer.department], (err, data) => {
-         if (err) throw err
-      })
-      ViewAllDepartments()
-      start()
-   })
+
 }
 
 function addRole() {
@@ -212,7 +213,7 @@ function addRole() {
       {
          type: "input",
          name: "departmrent",
-         message: "Please Enter The Role's Name.",
+         message: "Please Enter The Department Role's Name.",
          validate: answer => {
             if (answer !== "") {
                return true;
@@ -222,13 +223,7 @@ function addRole() {
       }
    ]).then((answer) => {
 
-      connection.query("SELECT id FROM role where title = ?", [answer.department], (err, res) => {
-         if (err) throw err
-         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
-            if (err) throw err
-         })
-         ViewAllRoles()
-      })
+
 
    })
 }
