@@ -2,6 +2,7 @@ const mysql = require("mysql")
 const inquirer = require("inquirer")
 const fs = require("fs")
 var Table = require('cli-table');
+// var Table = require('../');
 // const consTable = require("console.table")
 // const util = require("util")
 
@@ -37,31 +38,37 @@ function start() {
          name: "choice",
          message: "What would you like to do?",
          choices: [
-            "View all employees",
-            "View all employees by department",
-            "View all employees by manager",
-            "Add employee",
+            "View All Departments",
+            "View All Roles",
+            "View All Employees",
+            "View All Employees By Department",
+            "View All Employees By Nanager",
             "Add Department",
             "Add Role",
-            "View Role",
-            "Remove employee",
-            "Update employee role",
-            "Update employee manager"
+            "Add Employee",
+            "Remove Employee",
+            "Update Employee Role",
+            "Update Employee Manager",
+            "Quit",
+            "Done"
          ]
       }
    ).then(answer => {
       switch (answer.choice) {
-         case "View all employees":
-            byEmployee()
+         case "View All Departments":
+            ViewAllDepartments()
             break;
-         case "View all employees by department":
+         case "View All Roles":
+            ViewAllRoles()
+            break;
+         case "View All Employees":
+            ViewAllEmployees()
+            break;
+         case "View All Employees by Department":
             byDepartment()
             break;
-         case "View all employees by manager":
+         case "View All Employees by Manager":
             byManager()
-            break;
-         case "Add employee":
-            addEmployee()
             break;
          case "Add Department":
             addDepartment()
@@ -69,37 +76,57 @@ function start() {
          case "Add Role":
             addRole()
             break;
-         case "View Role":
-            roleTable()
+         case "Add employee":
+            addEmployee()
             break;
-         case "Remove employee":
+
+         case "Remove Employee":
             removeEmployee()
             break;
-         case "Update employee role":
+         case "Update Employee Role":
             updateEmployeeRole()
             break;
-         case "Update employee manager":
+         case "Update Employee Manager":
+            updateEmployeeManager()
+            break;
+         case "Quit":
             updateEmployeeManager()
             break;
       }
    })
 }
 
-function byEmployee() {
-
-   connection.query("SELECT * FROM employee", (err, res) => {
+function ViewAllDepartments() {
+   connection.query("SELECT d_name FROM department;", (err, res) => {
       if (err) throw err
-      console.log("\n")
-      console.log("id", "First_name", "Last_name", "Title", "Department", "Salary", "Manager")
-
+      var table = new Table({
+         head: ['Department']
+         , style: {
+            'padding-left': 1
+            , 'padding-right': 1
+            , head: []
+            , border: []
+         }
+         , colWidths: [20]
+      });
 
       for (let i = 0; i < res.length; i++) {
-
-         console.log("ID: " + res[i].id + "  ||  First Name: " + res[i].first_name + "  ||  Last Name: " + res[i].last_name + "  ||  Role: " + res[i].role_id + "  ||  Manager ID: " + res[i].manager_id)
+         let data = []
+         data.push(res[i].d_name)
+         table.push(data)
       }
-      console.log("\n")
+
+      console.log(table.toString())
       start()
    })
+}
+
+function ViewAllRoles() {
+
+}
+function ViewAllEmployees() {
+
+
 
 }
 
@@ -112,6 +139,79 @@ function byDepartment() {
 }
 
 function byManager() { }
+
+
+
+function addDepartment() {
+   inquirer.prompt(
+      {
+         name: "department",
+         type: "input",
+         message: "Please Enter The Department You Would Like To Add?",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      }
+   ).then((answer) => {
+      connection.query("INSERT INTO department SET ?", [answer.department], (err, data) => {
+         if (err) throw err
+      })
+      ViewAllDepartments()
+      start()
+   })
+}
+
+function addRole() {
+   inquirer.prompt([
+      {
+         type: "input",
+         name: "title",
+         message: "Please Enter The Role's Title.",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+
+      },
+      {
+         type: "input",
+         name: "salary",
+         message: "Please Enter The Role's Salary.",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      },
+      {
+         type: "input",
+         name: "departmrent",
+         message: "Please Enter The Role's Name.",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      }
+   ]).then((answer) => {
+
+      connection.query("SELECT id FROM role where title = ?", [answer.department], (err, res) => {
+         if (err) throw err
+         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
+            if (err) throw err
+         })
+         ViewAllRoles()
+      })
+
+   })
+}
 
 function addEmployee() {
    inquirer.prompt([
@@ -149,10 +249,14 @@ function addEmployee() {
          message: "What is The Employee's Manager?",
          choices: ['Saad', 'Stevie', 'Ahmed', "Mike", "None"]
       }
-
    ]).then((answer) => {
-
-
+      connection.query("SELECT id FROM department where d_name = ?", [answer.department], (err, res) => {
+         if (err) throw err
+         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
+            if (err) throw err
+         })
+         ViewAllRoles()
+      })
 
       connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role, answer.manager], (err, data) => {
          if (err) throw err
@@ -161,108 +265,6 @@ function addEmployee() {
    })
 }
 
-function addDepartment() {
-   inquirer.prompt(
-      {
-         name: "department",
-         type: "input",
-         message: "Please Enter The Department You Would Like To Add?",
-         validate: answer => {
-            if (answer !== "") {
-               return true;
-            }
-            return "Please enter at least one character.";
-         }
-      }
-   ).then((answer) => {
-      connection.query("INSERT INTO department SET ?", [answer.department], (err, data) => {
-         if (err) throw err
-      })
-      departmentTable()
-      start()
-   })
-}
-
-function departmentTable() {
-   connection.query("SELECT d_name FROM department;", (err, res) => {
-      if (err) throw err
-      console.table(res)
-      start()
-   })
-}
-
-function addRole() {
-   inquirer.prompt([
-      {
-         type: "input",
-         name: "title",
-         message: "Please Enter The Role's Title.",
-         validate: answer => {
-            if (answer !== "") {
-               return true;
-            }
-            return "Please enter at least one character.";
-         }
-
-      },
-      {
-         type: "input",
-         name: "salary",
-         message: "Please Enter The Role's Salary.",
-         validate: answer => {
-            if (answer !== "") {
-               return true;
-            }
-            return "Please enter at least one character.";
-         }
-      },
-      {
-         type: "input",
-         name: "department",
-         message: "Please Enter The Role's Department Name.",
-         validate: answer => {
-            if (answer !== "") {
-               return true;
-            }
-            return "Please enter at least one character.";
-         }
-      }
-   ]).then((answer) => {
-
-      connection.query("SELECT id FROM department where d_name = ?", [answer.department], (err, res) => {
-         if (err) throw err
-         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
-            if (err) throw err
-         })
-         roleTable()
-      })
-
-   })
-}
-
-function roleTable() {
-   connection.query("SELECT role.id, role.title, role.salary, department.d_name FROM department JOIN role ON department.id = role.department_id;", (err, res) => {
-      if (err) throw err
-      console.log("\n")
-      for (let i = 0; i < res.length; i++) {
-
-         console.log("ID: " + res[i].id + "  ||  Title: " + res[i].title + "  ||  Salary: " + res[i].salary + "  ||  Dapartment: " + res[i].d_name)
-      }
-      console.log("\n")
-      start()
-      // console.log(res)
-      // var table = new Table({
-      //    head: ['TH 1 label', 'TH 2 label']
-      //    , colWidths: [100, 200]
-      // });
-
-      // for (let i = 0; i < res.length; i++) {
-
-      //    table.push(res[i])
-      // }
-      // console.log(table.toString())
-   })
-}
 
 function removeEmployee() {
    inquirer.prompt([
