@@ -182,7 +182,24 @@ function byManager() { }
 
 
 function addDepartment() {
-
+   inquirer.prompt(
+      {
+         name: "department",
+         type: "input",
+         message: "Please Enter The Department You Would Like To Add?",
+         validate: answer => {
+            if (answer !== "") {
+               return true;
+            }
+            return "Please enter at least one character.";
+         }
+      }
+   ).then((answer) => {
+      connection.query("INSERT INTO department SET ?", [answer.department], (err, data) => {
+         if (err) throw err
+      })
+      start()
+   })
 }
 
 function addRole() {
