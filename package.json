@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "asciiart-logo": "^0.2.6",
+    "cli-table": "^0.3.1",
     "inquirer": "^7.3.3",
     "mysql": "^2.18.1"
   },
