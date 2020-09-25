@@ -122,7 +122,27 @@ function ViewAllDepartments() {
 }
 
 function ViewAllRoles() {
-
+   connection.query("SELECT role.id, role.title, role.salary, department.d_name FROM department JOIN role ON department.id = role.department_id;", (err, res) => {
+      if (err) throw err
+      // console.log("\n")
+      var table = new Table({
+         head: ['Title', 'Salary', 'Department']
+         , style: {
+            'padding-left': 1
+            , 'padding-right': 1
+            , head: []
+            , border: []
+         }
+         , colWidths: [21, 15, 20]
+      });
+      for (let i = 0; i < res.length; i++) {
+         let data = []
+         data.push(res[i].title, res[i].salary, res[i].d_name)
+         table.push(data)
+      }
+      console.log(table.toString())
+      start()
+   })
 }
 function ViewAllEmployees() {
 
