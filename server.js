@@ -2,6 +2,7 @@ const mysql = require("mysql")
 const inquirer = require("inquirer")
 const fs = require("fs")
 var Table = require('cli-table');
+const { title } = require("process");
 // var Table = require('../');
 // const consTable = require("console.table")
 // const util = require("util")
@@ -76,7 +77,7 @@ function start() {
          case "Add Role":
             addRole()
             break;
-         case "Add employee":
+         case "Add Employee":
             addEmployee()
             break;
 
@@ -100,7 +101,7 @@ function ViewAllDepartments() {
    connection.query("SELECT d_name FROM department;", (err, res) => {
       if (err) throw err
       var table = new Table({
-         head: ['Department']
+         head: ['Departments']
          , style: {
             'padding-left': 1
             , 'padding-right': 1
@@ -144,6 +145,7 @@ function ViewAllRoles() {
       start()
    })
 }
+
 function ViewAllEmployees() {
    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.d_name FROM employee JOIN role ON role_id = role.id JOIN department ON department_id = department.id", (err, res) => {
       if (err) throw err
@@ -193,9 +195,11 @@ function addDepartment() {
          }
       }
    ).then((answer) => {
-      connection.query("INSERT INTO department SET ?", [answer.department], (err, data) => {
+      connection.query("INSERT INTO department SET d_name =?", [answer.department], (err, data) => {
          if (err) throw err
+
       })
+
       start()
    })
 }
@@ -227,7 +231,7 @@ function addRole() {
       },
       {
          type: "input",
-         name: "departmrent",
+         name: "department",
          message: "Please Enter The Department Role's Name.",
          validate: answer => {
             if (answer !== "") {
@@ -239,6 +243,7 @@ function addRole() {
    ]).then((answer) => {
       connection.query("SELECT id FROM department where d_name = ?", [answer.department], (err, res) => {
          if (err) throw err
+         console.log(res)
          connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
             if (err) throw err
          })
@@ -272,23 +277,55 @@ function addEmployee() {
          }
       },
       {
-         type: "input",
+         type: "list",
          name: "role",
          message: "What is The Employee's Role?",
-         // choices: ["Salesperson", "Sales Lead", 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer']
+         choices: ["Salesperson", "Sales Lead", 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer']
+         // () => {
+         //    return connection.query("SELECT title FROM role;", (err, res) => {
+         //       if (err) throw err;
+         //       var data = [];
+         //       // console.log(res)
+
+         //       for (let i = 0; i < res.length; i++) {
+
+         //          data.push(res[i].title);
+
+         //       }
+         //       return JSON.stringify(data)
+         //    })
+
+         // }
       },
       {
-         type: "input",
-         name: "manager",
+         type: "list",
+         name: "managerFirst",
          message: "What is The Employee's Manager?",
-         // choices: ['Saad', 'Stevie', 'Ahmed', "Mike", "None"]
+         choices: ["Saad", "Stevie", "Ahmed", "Mike"]
+
+      },
+      {
+         type: "list",
+         name: "managerLast",
+         message: "What is The Employee's Manager?",
+         choices: ["Zaghloul", "Nicks", "Shalaby", "Roger", "None"]
+
       }
    ]).then((answer) => {
-
-
-      connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role, answer.manager], (err, data) => {
+      connection.query("SELECT id FROM role where title = ?", [answer.role], (err, rolID) => {
          if (err) throw err
-         start()
+         // console.log(rolID[0].id)
+         // console.log(answer.managerFirst)
+         connection.query("SELECT id FROM employee WHERE first_name = ? AND last_name =?", [answer.managerFirst, answer.managerLast], (err, mangID) => {
+            if (err) throw err
+            console.log(mangID)
+
+            connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, rolID[0].id, mangID[0].id], (err, res) => {
+               if (err) throw err
+            })
+
+            start()
+         })
       })
    })
 }
@@ -307,10 +344,7 @@ function removeEmployee() {
          message: "Please Enter The Employee Last Name"
       }
    ]).then((answer) => {
-      connection.query("DELETE FROM employee WHERE first_name = ?, last_name = ? ", [answer.first, answer.last], (err, res) => {
-         if (err) throw err
-      })
-      byEmployee()
+
    })
 }
 
