@@ -360,20 +360,33 @@ function removeEmployee() {
 function updateEmployeeRole() {
    inquirer.prompt([
       {
-         name: "employee",
+         name: "first",
          type: "input",
-         message: "Please Enter The Employee ID"
+         message: "What is The Employee First Name"
+      },
+      {
+         name: "last",
+         type: "input",
+         message: "What is The Employee Last Name"
       },
       {
          name: "role",
          type: "input",
-         message: "Please Enter The Role ID"
+         message: "Please Choise the New Position"
       }
    ]).then((answer) => {
-      connection.query("UPDATE emoployee SET role_id= ? WHERE id=?", [answer.role, answer.employee], (err, res) => {
+      connection.query("SELECT id FROM role WHERE title=? ", [answer.role], (err, roleID) => {
          if (err) throw err
+         // console.log(roleID)
+         // console.log(roleID[0].id)
+         // console.log(answer.first)
+         // console.log(answer.last)
+
+         connection.query("UPDATE employee SET role_id= ? WHERE first_name=? AND last_name=?", [roleID[0].id, answer.first, answer.last], (err, res) => {
+            if (err) throw err
+         })
+         ViewAllEmployees()
       })
-      byEmployee()
    })
 }
 
