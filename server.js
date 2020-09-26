@@ -179,8 +179,6 @@ function byDepartment() {
 
 function byManager() { }
 
-
-
 function addDepartment() {
    inquirer.prompt(
       {
@@ -239,9 +237,13 @@ function addRole() {
          }
       }
    ]).then((answer) => {
-
-
-
+      connection.query("SELECT id FROM department where d_name = ?", [answer.department], (err, res) => {
+         if (err) throw err
+         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
+            if (err) throw err
+         })
+         ViewAllRoles()
+      })
    })
 }
 
@@ -270,25 +272,19 @@ function addEmployee() {
          }
       },
       {
-         type: "list",
+         type: "input",
          name: "role",
          message: "What is The Employee's Role?",
-         choices: ["Salesperson", "Sales Lead", 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer']
+         // choices: ["Salesperson", "Sales Lead", 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer']
       },
       {
-         type: "list",
+         type: "input",
          name: "manager",
          message: "What is The Employee's Manager?",
-         choices: ['Saad', 'Stevie', 'Ahmed', "Mike", "None"]
+         // choices: ['Saad', 'Stevie', 'Ahmed', "Mike", "None"]
       }
    ]).then((answer) => {
-      connection.query("SELECT id FROM department where d_name = ?", [answer.department], (err, res) => {
-         if (err) throw err
-         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
-            if (err) throw err
-         })
-         ViewAllRoles()
-      })
+
 
       connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role, answer.manager], (err, data) => {
          if (err) throw err
