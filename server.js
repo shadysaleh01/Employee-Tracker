@@ -344,6 +344,15 @@ function removeEmployee() {
          message: "Please Enter The Employee Last Name"
       }
    ]).then((answer) => {
+      connection.query("SELECT id FROM employee WHERE first_name =? AND last_name =?", [answer.first, answer.last], (err, id) => {
+         if (err) throw err
+         console.log(id)
+         connection.query("DELETE FROM employee WHERE id = ? ", [id[0].id], (err, res) => {
+            if (err) throw err
+
+         })
+      })
+
 
    })
 }
