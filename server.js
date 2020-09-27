@@ -345,7 +345,32 @@ function removeDepartment() {
 
    })
 }
+function removeRole() {
 
+   let remove = []
+   connection.query("SELECT * FROM role", (err, res) => {
+      if (err) throw err;
+
+      for (let i = 0; i < res.length; i++) {
+         remove.push({ name: res[i].title, value: res[i].id });
+      }
+      inquirer.prompt([
+         {
+            type: "list",
+            name: "role",
+            message: "What is The Role You Whould Like To Delete?",
+            choices: remove
+         }
+      ]).then((answer) => {
+
+         connection.query("DELETE FROM role WHERE id = ? ", [answer.role], (err, res) => {
+            if (err) throw err
+            ViewAllRoles()
+         })
+      })
+
+   })
+}
 function removeEmployee() {
 
    let remove = []
