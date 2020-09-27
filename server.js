@@ -47,6 +47,8 @@ function start() {
             "Add Department",
             "Add Role",
             "Add Employee",
+            "Remove Department",
+            "Remove Role",
             "Remove Employee",
             "Update Employee Role",
             "Update Employee Manager",
@@ -79,6 +81,12 @@ function start() {
             break;
          case "Add Employee":
             addEmployee()
+            break;
+         case "Remove Department":
+            removeDepartment()
+            break;
+         case "Remove Role":
+            removeRole()
             break;
 
          case "Remove Employee":
@@ -311,6 +319,33 @@ function addEmployee() {
 
 }
 
+function removeDepartment() {
+
+   let remove = []
+   connection.query("SELECT * FROM department", (err, res) => {
+      if (err) throw err;
+
+      for (let i = 0; i < res.length; i++) {
+         remove.push({ name: res[i].d_name, value: res[i].id });
+      }
+      inquirer.prompt([
+         {
+            type: "list",
+            name: "department",
+            message: "What is The Department's Name?",
+            choices: remove
+         }
+      ]).then((answer) => {
+
+         connection.query("DELETE FROM department WHERE id = ? ", [answer.department], (err, res) => {
+            if (err) throw err
+            ViewAllDepartments()
+         })
+      })
+
+   })
+}
+
 function removeEmployee() {
 
    let remove = []
@@ -324,7 +359,7 @@ function removeEmployee() {
          {
             type: "list",
             name: "fullName",
-            message: "What is The Employee's Manager?",
+            message: "What is The Employee's Name?",
             choices: remove
          }
       ]).then((answer) => {
@@ -337,6 +372,7 @@ function removeEmployee() {
 
    })
 }
+
 
 
 
