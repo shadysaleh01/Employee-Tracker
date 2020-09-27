@@ -194,6 +194,15 @@ function addDepartment() {
 }
 
 function addRole() {
+
+   let departments = [];
+   connection.query("SELECT * FROM department", (err, res) => {
+      if (err) throw err;
+      for (let i = 0; i < res.length; i++) {
+
+         departments.push({ name: res[i].d_name, value: res[i].id });
+      }
+   })
    inquirer.prompt([
       {
          type: "input",
@@ -219,25 +228,17 @@ function addRole() {
          }
       },
       {
-         type: "input",
-         name: "department",
-         message: "Please Enter The Department Role's Name.",
-         validate: answer => {
-            if (answer !== "") {
-               return true;
-            }
-            return "Please enter at least one character.";
-         }
+         type: "list",
+         name: "department_id",
+         message: "Please Choose The Department Role's Name.",
+         choices: departments
       }
    ]).then((answer) => {
-      connection.query("SELECT id FROM department where d_name = ?", [answer.department], (err, res) => {
+
+      connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, answer.department_id], (err, res) => {
          if (err) throw err
-         console.log(res)
-         connection.query("INSERT INTO role SET title= ?, salary=?, department_id=?", [answer.title, answer.salary, res[0].id], (err, res) => {
-            if (err) throw err
-         })
-         ViewAllRoles()
       })
+      ViewAllRoles()
    })
 }
 
