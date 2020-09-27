@@ -171,16 +171,6 @@ function ViewAllEmployees() {
    })
 }
 
-function byDepartment() {
-   // connection.query("SELECT DISTINCT column, AGG_FUNC(column_or_expression), …
-   // FROM mytable
-   //     JOIN another_table
-   //       ON mytable.column = another_table.column
-   //     WHERE constraint_expression")
-}
-
-function byManager() { }
-
 function addDepartment() {
    inquirer.prompt(
       {
@@ -199,7 +189,6 @@ function addDepartment() {
          if (err) throw err
 
       })
-
       start()
    })
 }
@@ -253,6 +242,26 @@ function addRole() {
 }
 
 function addEmployee() {
+
+   let roleTitles = [];
+   connection.query("SELECT * FROM role", (err, res) => {
+      if (err) throw err;
+      for (let i = 0; i < res.length; i++) {
+
+         roleTitles.push({ name: res[i].title, value: res[i].id });
+      }
+   })
+
+   let employees = []
+   connection.query("SELECT * FROM employee", (err, res) => {
+      if (err) throw err;
+
+      for (let i = 0; i < res.length; i++) {
+         employees.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
+      }
+
+   })
+
    inquirer.prompt([
       {
          type: "input",
@@ -278,58 +287,29 @@ function addEmployee() {
       },
       {
          type: "list",
-         name: "role",
+         name: "role_id",
          message: "What is The Employee's Role?",
-         choices: ["Salesperson", "Sales Lead", 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer']
-         // () => {
-         //    return connection.query("SELECT title FROM role;", (err, res) => {
-         //       if (err) throw err;
-         //       var data = [];
-         //       // console.log(res)
-
-         //       for (let i = 0; i < res.length; i++) {
-
-         //          data.push(res[i].title);
-
-         //       }
-         //       return JSON.stringify(data)
-         //    })
-
-         // }
-      },
-      {
-         type: "list",
-         name: "managerFirst",
-         message: "What is The Employee's Manager?",
-         choices: ["Saad", "Stevie", "Ahmed", "Mike"]
+         choices: roleTitles
 
       },
       {
          type: "list",
-         name: "managerLast",
+         name: "manager_id",
          message: "What is The Employee's Manager?",
-         choices: ["Zaghloul", "Nicks", "Shalaby", "Roger", "None"]
-
+         choices: employees
       }
+
    ]).then((answer) => {
-      connection.query("SELECT id FROM role where title = ?", [answer.role], (err, rolID) => {
+
+
+      connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role_id, answer.manager_id], (err, res) => {
          if (err) throw err
-         // console.log(rolID[0].id)
-         // console.log(answer.managerFirst)
-         connection.query("SELECT id FROM employee WHERE first_name = ? AND last_name =?", [answer.managerFirst, answer.managerLast], (err, mangID) => {
-            if (err) throw err
-            console.log(mangID)
-
-            connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, rolID[0].id, mangID[0].id], (err, res) => {
-               if (err) throw err
-            })
-
-            start()
-         })
       })
-   })
-}
 
+      start()
+   })
+
+}
 
 function removeEmployee() {
    inquirer.prompt([
@@ -393,3 +373,12 @@ function updateEmployeeRole() {
 function updateEmployeeManager() { }
 
 
+function byDepartment() {
+   // connection.query("SELECT DISTINCT column, AGG_FUNC(column_or_expression), …
+   // FROM mytable
+   //     JOIN another_table
+   //       ON mytable.column = another_table.column
+   //     WHERE constraint_expression")
+}
+
+function byManager() { }

@@ -11,8 +11,8 @@ VALUES
 INSERT INTO role
    (title, salary, department_id)
 VALUES
-   ('Salesperson', 80000, 1),
    ('Sales Lead', 100000, 1),
+   ('Salesperson', 80000, 1),
    ('Lead Engineer', 150000, 2),
    ('Software Engineer', 120000, 2),
    ('Account Manager', 160000, 3),
@@ -23,8 +23,8 @@ VALUES
 INSERT INTO employee
    (first_name, last_name, role_id, manager_id)
 VALUES
-   ('Hadeel', 'Ghra', 1, 2),
-   ('Saad', 'Zaghloul', 2, NULL),
+   ('Saad', 'Zaghloul', 1, NULL),
+   ('Hadeel', 'Ghra', 2, 1),
    ('Stevie', 'Nicks', 3, NULL),
    ('Shady', 'Saleh', 4, 3),
    ('Ahmed', 'Shalaby', 5, NULL),
