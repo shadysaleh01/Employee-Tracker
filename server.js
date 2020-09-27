@@ -42,8 +42,6 @@ function start() {
             "View All Departments",
             "View All Roles",
             "View All Employees",
-            "View All Employees By Department",
-            "View All Employees By Nanager",
             "Add Department",
             "Add Role",
             "Add Employee",
@@ -67,12 +65,6 @@ function start() {
          case "View All Employees":
             ViewAllEmployees()
             break;
-         case "View All Employees by Department":
-            byDepartment()
-            break;
-         case "View All Employees by Manager":
-            byManager()
-            break;
          case "Add Department":
             addDepartment()
             break;
@@ -88,7 +80,6 @@ function start() {
          case "Remove Role":
             removeRole()
             break;
-
          case "Remove Employee":
             removeEmployee()
             break;
@@ -98,8 +89,8 @@ function start() {
          case "Update Employee Manager":
             updateEmployeeManager()
             break;
-         case "Quit":
-            updateEmployeeManager()
+         case "Done":
+            done()
             break;
       }
    })
@@ -246,6 +237,7 @@ function addRole() {
          if (err) throw err
       })
       ViewAllRoles()
+      start()
    })
 }
 
@@ -366,6 +358,7 @@ function removeRole() {
          connection.query("DELETE FROM role WHERE id = ? ", [answer.role], (err, res) => {
             if (err) throw err
             ViewAllRoles()
+            start()
          })
       })
 
@@ -393,14 +386,11 @@ function removeEmployee() {
             if (err) throw err
             ViewAllEmployees()
          })
+         start()
       })
 
    })
 }
-
-
-
-
 
 function updateEmployeeRole() {
    let employeeList = []
@@ -438,6 +428,7 @@ function updateEmployeeRole() {
             if (err) throw err
             ViewAllEmployees()
          })
+         start()
       })
    })
 }
@@ -473,44 +464,11 @@ function updateEmployeeManager() {
 
       })
       ViewAllEmployees()
+      start()
    })
 }
+function done() {
+   console.log("Your Updates Have been successfully Saved! Goodbye")
+   connection.end()
+}
 
-
-// function viewByDepartment() {
-
-//       inquirer.prompt([
-//          {
-//             type: "list",
-//             name: "department",
-//             message: "Please Choose The Department",
-//             choices: 
-
-//          }
-//       ]).then((answer) => {
-
-//          connection.query("SELECT department.id, department.d_name FROM department JOIN role ON department.id=?", [answer.department], (err, res) => {
-//             if (err) throw err
-//             var table = new Table({
-//                head: ['ID', 'First Name', 'Last Name', 'Title', 'Salary', 'Department']
-//                , style: {
-//                   'padding-left': 1
-//                   , 'padding-right': 1
-//                   , head: []
-//                   , border: []
-//                }
-//                , colWidths: [7, 15, 15, 22, 12, 18]
-//             });
-
-//             for (let i = 0; i < res.length; i++) {
-//                let data = []
-//                data.push(res[i].id, res[i].first_name, res[i].last_name, res[i].title, res[i].salary, res[i].d_name)
-//                table.push(data)
-//             }
-//             console.log(table.toString())
-//          })
-//          ViewAllRoles()
-//       })
-//    }
-
-// function byManager() { }
