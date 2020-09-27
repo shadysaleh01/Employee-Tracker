@@ -125,7 +125,6 @@ function ViewAllDepartments() {
 function ViewAllRoles() {
    connection.query("SELECT role.id, role.title, role.salary, department.d_name FROM department JOIN role ON department.id = role.department_id;", (err, res) => {
       if (err) throw err
-      // console.log("\n")
       var table = new Table({
          head: ['Title', 'Salary', 'Department']
          , style: {
@@ -313,65 +312,97 @@ function addEmployee() {
 }
 
 function removeEmployee() {
+
+   let remove = []
+   connection.query("SELECT * FROM employee", (err, res) => {
+      if (err) throw err;
+
+      for (let i = 0; i < res.length; i++) {
+         remove.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
+      }
+
+   })
+
+
    inquirer.prompt([
       {
-         name: "first",
-         type: "input",
-         message: "Please Enter The Employee First Name"
-      },
-      {
-         name: "last",
-         type: "input",
-         message: "Please Enter The Employee Last Name"
+         type: "list",
+         name: "fullName",
+         message: "What is The Employee's Manager?",
+         choices: remove
       }
    ]).then((answer) => {
-      connection.query("SELECT id FROM employee WHERE first_name =? AND last_name =?", [answer.first, answer.last], (err, id) => {
-         if (err) throw err
-         console.log(id)
-         connection.query("DELETE FROM employee WHERE id = ? ", [id[0].id], (err, res) => {
-            if (err) throw err
+      // connection.query("SELECT id FROM employee WHERE first_name =? AND last_name =?", [answer.first, answer.last], (err, id) => {
+      //    if (err) throw err
+      //    console.log(id)
+      //    connection.query("DELETE FROM employee WHERE id = ? ", [id[0].id], (err, res) => {
+      //       if (err) throw err
 
-         })
-      })
-
+      //    })
+      // })
+      console.log(answer)
 
    })
 }
 
 function updateEmployeeRole() {
+   let employeeList = []
+   connection.query("SELECT * FROM employee", (err, res) => {
+      if (err) throw err;
+
+      for (let i = 0; i < res.length; i++) {
+         employeeList.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
+      }
+   })
+   let role = []
+   connection.query("SELECT * FROM role", (err, res) => {
+      if (err) throw err;
+
+      for (let i = 0; i < res.length; i++) {
+         role.push({ name: res[i].title, value: res[i].id });
+      }
+   })
    inquirer.prompt([
       {
-         name: "first",
-         type: "input",
-         message: "What is The Employee First Name"
-      },
-      {
-         name: "last",
-         type: "input",
-         message: "What is The Employee Last Name"
+         name: "fullName",
+         type: "list",
+         message: "What is The Employee First Name",
+         choices: employeeList
       },
       {
          name: "role",
-         type: "input",
-         message: "Please Choise the New Position"
+         type: "list",
+         message: "Please Choise the New Position",
+         choices: role
       }
    ]).then((answer) => {
-      connection.query("SELECT id FROM role WHERE title=? ", [answer.role], (err, roleID) => {
-         if (err) throw err
-         // console.log(roleID)
-         // console.log(roleID[0].id)
-         // console.log(answer.first)
-         // console.log(answer.last)
 
-         connection.query("UPDATE employee SET role_id= ? WHERE first_name=? AND last_name=?", [roleID[0].id, answer.first, answer.last], (err, res) => {
-            if (err) throw err
-         })
+
+      connection.query("UPDATE employee SET role_id= ? WHERE id=?", [answer.role, answer.fullName], (err, res) => {
+         if (err) throw err
          ViewAllEmployees()
       })
+
+      // connection.query("SELECT id FROM role WHERE title=? ", [answer.role], (err, roleID) => {
+      //    if (err) throw err
+      //    // console.log(roleID)
+      //    // console.log(roleID[0].id)
+      //    // console.log(answer.first)
+      //    // console.log(answer.last)
+
+      //    connection.query("UPDATE employee SET role_id= ? WHERE first_name=? AND last_name=?", [roleID[0].id, answer.first, answer.last], (err, res) => {
+      //       if (err) throw err
+      //    })
+      //    ViewAllEmployees()
+      // })
+      console.log(answer)
    })
 }
 
-function updateEmployeeManager() { }
+function updateEmployeeManager() {
+
+
+}
 
 
 function byDepartment() {
