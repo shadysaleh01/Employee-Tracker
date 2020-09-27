@@ -320,30 +320,26 @@ function removeEmployee() {
       for (let i = 0; i < res.length; i++) {
          remove.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
       }
+      inquirer.prompt([
+         {
+            type: "list",
+            name: "fullName",
+            message: "What is The Employee's Manager?",
+            choices: remove
+         }
+      ]).then((answer) => {
 
-   })
-
-
-   inquirer.prompt([
-      {
-         type: "list",
-         name: "fullName",
-         message: "What is The Employee's Manager?",
-         choices: remove
-      }
-   ]).then((answer) => {
-      // connection.query("SELECT id FROM employee WHERE first_name =? AND last_name =?", [answer.first, answer.last], (err, id) => {
-      //    if (err) throw err
-      //    console.log(id)
-      //    connection.query("DELETE FROM employee WHERE id = ? ", [id[0].id], (err, res) => {
-      //       if (err) throw err
-
-      //    })
-      // })
-      console.log(answer)
+         connection.query("DELETE FROM employee WHERE id = ? ", [answer.fullName], (err, res) => {
+            if (err) throw err
+            ViewAllEmployees()
+         })
+      })
 
    })
 }
+
+
+
 
 function updateEmployeeRole() {
    let employeeList = []
@@ -353,64 +349,107 @@ function updateEmployeeRole() {
       for (let i = 0; i < res.length; i++) {
          employeeList.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
       }
-   })
-   let role = []
-   connection.query("SELECT * FROM role", (err, res) => {
-      if (err) throw err;
+      let role = []
+      connection.query("SELECT * FROM role", (err, res) => {
+         if (err) throw err;
 
-      for (let i = 0; i < res.length; i++) {
-         role.push({ name: res[i].title, value: res[i].id });
-      }
-   })
-   inquirer.prompt([
-      {
-         name: "fullName",
-         type: "list",
-         message: "What is The Employee First Name",
-         choices: employeeList
-      },
-      {
-         name: "role",
-         type: "list",
-         message: "Please Choise the New Position",
-         choices: role
-      }
-   ]).then((answer) => {
-
-
-      connection.query("UPDATE employee SET role_id= ? WHERE id=?", [answer.role, answer.fullName], (err, res) => {
-         if (err) throw err
-         ViewAllEmployees()
+         for (let i = 0; i < res.length; i++) {
+            role.push({ name: res[i].title, value: res[i].id });
+         }
       })
+      inquirer.prompt([
+         {
+            name: "fullName",
+            type: "list",
+            message: "What is The Employee First Name",
+            choices: employeeList
+         },
+         {
+            name: "role",
+            type: "list",
+            message: "Please Choise the New Position",
+            choices: role
+         }
+      ]).then((answer) => {
 
-      // connection.query("SELECT id FROM role WHERE title=? ", [answer.role], (err, roleID) => {
-      //    if (err) throw err
-      //    // console.log(roleID)
-      //    // console.log(roleID[0].id)
-      //    // console.log(answer.first)
-      //    // console.log(answer.last)
 
-      //    connection.query("UPDATE employee SET role_id= ? WHERE first_name=? AND last_name=?", [roleID[0].id, answer.first, answer.last], (err, res) => {
-      //       if (err) throw err
-      //    })
-      //    ViewAllEmployees()
-      // })
-      console.log(answer)
+         connection.query("UPDATE employee SET role_id= ? WHERE id=?", [answer.role, answer.fullName], (err, res) => {
+            if (err) throw err
+            ViewAllEmployees()
+         })
+      })
    })
 }
 
 function updateEmployeeManager() {
 
+   let employeeList = []
+   connection.query("SELECT * FROM employee", (err, res) => {
+      if (err) throw err;
 
+      for (let i = 0; i < res.length; i++) {
+         employeeList.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
+      }
+   })
+   inquirer.prompt([
+      {
+         name: "employee",
+         type: "list",
+         message: "Please Choose Employee Name",
+         choices: employeeList
+      },
+      {
+         name: "manager",
+         type: "list",
+         message: "Please Choose New Manager Name",
+         choices: employeeList
+
+      }
+   ]).then(answer => {
+
+      connection.query("UPDATE employee SET manager_id= ? WHERE id=?", [answer.manager, answer.employee], (err, res) => {
+         if (err) throw err
+
+      })
+      ViewAllEmployees()
+   })
 }
 
 
-function byDepartment() {
-   // connection.query("SELECT DISTINCT column, AGG_FUNC(column_or_expression), …
-   // FROM mytable
-   //     JOIN another_table
-   //       ON mytable.column = another_table.column
-   //     WHERE constraint_expression")
-}
+// function viewByDepartment() {
 
-function byManager() { }
+//       inquirer.prompt([
+//          {
+//             type: "list",
+//             name: "department",
+//             message: "Please Choose The Department",
+//             choices: 
+
+//          }
+//       ]).then((answer) => {
+
+//          connection.query("SELECT department.id, department.d_name FROM department JOIN role ON department.id=?", [answer.department], (err, res) => {
+//             if (err) throw err
+//             var table = new Table({
+//                head: ['ID', 'First Name', 'Last Name', 'Title', 'Salary', 'Department']
+//                , style: {
+//                   'padding-left': 1
+//                   , 'padding-right': 1
+//                   , head: []
+//                   , border: []
+//                }
+//                , colWidths: [7, 15, 15, 22, 12, 18]
+//             });
+
+//             for (let i = 0; i < res.length; i++) {
+//                let data = []
+//                data.push(res[i].id, res[i].first_name, res[i].last_name, res[i].title, res[i].salary, res[i].d_name)
+//                table.push(data)
+//             }
+//             console.log(table.toString())
+//          })
+//          ViewAllRoles()
+//       })
+//    }
+
+// function byManager() { }
