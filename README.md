@@ -1,4 +1,4 @@
-# **Employee Traker**
+# **Employee Tracker**
 
 [Full Demo Video](https://drive.google.com/file/d/1qzlOV3S3INMgmkHaa5mWZLMLl-r07esW/preview)
 
@@ -11,7 +11,7 @@
 - [Questions](#questions)
 
 ## Description
-### Appliction for a business owner to be able to view and manage the departments, roles, and employees in the company So that they can organize and plan the business.
+### Appliction for a business owner to be able to view and manage the departments, roles, and employees in the company so that they can organize and plan the business.
 
 
 ## Languages and Tools:

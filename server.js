@@ -3,6 +3,7 @@ const inquirer = require("inquirer")
 const fs = require("fs")
 var Table = require('cli-table');
 const { title } = require("process");
+
 // var Table = require('../');
 // const consTable = require("console.table")
 // const util = require("util")
@@ -45,12 +46,11 @@ function start() {
             "Add Department",
             "Add Role",
             "Add Employee",
+            "Update Employee Role",
+            "Update Employee Manager",
             "Remove Department",
             "Remove Role",
             "Remove Employee",
-            "Update Employee Role",
-            "Update Employee Manager",
-            "Quit",
             "Done"
          ]
       }
@@ -167,6 +167,7 @@ function ViewAllEmployees() {
       console.log(table.toString())
       start()
    })
+
 }
 
 function addDepartment() {
@@ -174,7 +175,7 @@ function addDepartment() {
       {
          name: "department",
          type: "input",
-         message: "Please Enter The Department You Would Like To Add?",
+         message: "Please enter the department you would like to add?",
          validate: answer => {
             if (answer !== "") {
                return true;
@@ -187,7 +188,7 @@ function addDepartment() {
          if (err) throw err
 
       })
-      start()
+      ViewAllDepartments()
    })
 }
 
@@ -205,7 +206,7 @@ function addRole() {
       {
          type: "input",
          name: "title",
-         message: "Please Enter The Role's Title.",
+         message: "Please enter the title of the role.",
          validate: answer => {
             if (answer !== "") {
                return true;
@@ -217,7 +218,7 @@ function addRole() {
       {
          type: "input",
          name: "salary",
-         message: "Please Enter The Role's Salary.",
+         message: "Please enter the salary of the role.",
          validate: answer => {
             if (answer !== "") {
                return true;
@@ -228,7 +229,7 @@ function addRole() {
       {
          type: "list",
          name: "department_id",
-         message: "Please Choose The Department Role's Name.",
+         message: "What department of the following does this role belong to?",
          choices: departments
       }
    ]).then((answer) => {
@@ -237,7 +238,6 @@ function addRole() {
          if (err) throw err
       })
       ViewAllRoles()
-      start()
    })
 }
 
@@ -252,7 +252,7 @@ function addEmployee() {
       }
    })
 
-   let employees = []
+   let employees = ["None"]
    connection.query("SELECT * FROM employee", (err, res) => {
       if (err) throw err;
 
@@ -266,7 +266,7 @@ function addEmployee() {
       {
          type: "input",
          name: "first",
-         message: "What is the Employee's First Name?",
+         message: "What is the employee's first name?",
          validate: answer => {
             if (answer !== "") {
                return true;
@@ -277,7 +277,7 @@ function addEmployee() {
       {
          type: "input",
          name: "last",
-         message: "What is the Employee's Last Name?",
+         message: "What is the employee's last name?",
          validate: answer => {
             if (answer !== "") {
                return true;
@@ -288,25 +288,29 @@ function addEmployee() {
       {
          type: "list",
          name: "role_id",
-         message: "What is The Employee's Role?",
+         message: "What is the employee's role?",
          choices: roleTitles
 
       },
       {
          type: "list",
          name: "manager_id",
-         message: "What is The Employee's Manager?",
+         message: "Who is the employee's manager?",
          choices: employees
       }
 
    ]).then((answer) => {
 
-
-      connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role_id, answer.manager_id], (err, res) => {
-         if (err) throw err
-      })
-
-      start()
+      if (answer.manager_id == "None") {
+         connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role_id, "NULL"], (err, res) => {
+            if (err) throw err
+         })
+      } else {
+         connection.query("INSERT INTO employee SET first_name = ?, last_name = ?, role_id = ?, manager_id = ?", [answer.first, answer.last, answer.role_id, answer.manager_id], (err, res) => {
+            if (err) throw err
+         })
+      }
+      ViewAllEmployees()
    })
 
 }
@@ -337,6 +341,7 @@ function removeDepartment() {
 
    })
 }
+
 function removeRole() {
 
    let remove = []
@@ -358,12 +363,12 @@ function removeRole() {
          connection.query("DELETE FROM role WHERE id = ? ", [answer.role], (err, res) => {
             if (err) throw err
             ViewAllRoles()
-            start()
          })
       })
 
    })
 }
+
 function removeEmployee() {
 
    let remove = []
@@ -386,7 +391,6 @@ function removeEmployee() {
             if (err) throw err
             ViewAllEmployees()
          })
-         start()
       })
 
    })
@@ -428,7 +432,6 @@ function updateEmployeeRole() {
             if (err) throw err
             ViewAllEmployees()
          })
-         start()
       })
    })
 }
@@ -464,9 +467,9 @@ function updateEmployeeManager() {
 
       })
       ViewAllEmployees()
-      start()
    })
 }
+
 function done() {
    console.log("Your Updates Have been successfully Saved! Goodbye")
    connection.end()
