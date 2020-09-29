@@ -132,7 +132,7 @@ function ViewAllRoles() {
             , head: []
             , border: []
          }
-         , colWidths: [21, 15, 20]
+         , colWidths: [26, 15, 20]
       });
       for (let i = 0; i < res.length; i++) {
          let data = []
@@ -156,7 +156,7 @@ function ViewAllEmployees() {
             , head: []
             , border: []
          }
-         , colWidths: [7, 15, 15, 22, 12, 18]
+         , colWidths: [7, 15, 15, 26, 12, 20]
       });
 
       for (let i = 0; i < res.length; i++) {
@@ -328,7 +328,7 @@ function removeDepartment() {
          {
             type: "list",
             name: "department",
-            message: "What is The Department's Name?",
+            message: "What is the name of the department?",
             choices: remove
          }
       ]).then((answer) => {
@@ -355,7 +355,7 @@ function removeRole() {
          {
             type: "list",
             name: "role",
-            message: "What is The Role You Whould Like To Delete?",
+            message: "What is the role you would like to delete?",
             choices: remove
          }
       ]).then((answer) => {
@@ -382,7 +382,7 @@ function removeEmployee() {
          {
             type: "list",
             name: "fullName",
-            message: "What is The Employee's Name?",
+            message: "What is the employee's name?",
             choices: remove
          }
       ]).then((answer) => {
@@ -416,13 +416,13 @@ function updateEmployeeRole() {
          {
             name: "fullName",
             type: "list",
-            message: "What is The Employee First Name",
+            message: "What is the employee's name?",
             choices: employeeList
          },
          {
             name: "role",
             type: "list",
-            message: "Please Choise the New Position",
+            message: "Please choose the employee's new position",
             choices: role
          }
       ]).then((answer) => {
@@ -438,40 +438,48 @@ function updateEmployeeRole() {
 
 function updateEmployeeManager() {
 
-   let employeeList = []
+   let employeeList = ["None"]
    connection.query("SELECT * FROM employee", (err, res) => {
       if (err) throw err;
 
       for (let i = 0; i < res.length; i++) {
          employeeList.push({ name: `${res[i].first_name} ${res[i].last_name}`, value: res[i].id });
       }
-   })
-   inquirer.prompt([
-      {
-         name: "employee",
-         type: "list",
-         message: "Please Choose Employee Name",
-         choices: employeeList
-      },
-      {
-         name: "manager",
-         type: "list",
-         message: "Please Choose New Manager Name",
-         choices: employeeList
 
-      }
-   ]).then(answer => {
+      inquirer.prompt([
+         {
+            name: "employee",
+            type: "list",
+            message: "Please choose employee",
+            choices: employeeList
+         },
+         {
+            name: "manager",
+            type: "list",
+            message: "Please choose the employee's new nanager",
+            choices: employeeList
 
-      connection.query("UPDATE employee SET manager_id= ? WHERE id=?", [answer.manager, answer.employee], (err, res) => {
-         if (err) throw err
+         }
+      ]).then(answer => {
 
+         if (answer.manager == "None") {
+            connection.query("UPDATE employee SET manager_id= ? WHERE id=?", ["NULL", answer.employee], (err, res) => {
+               if (err) throw err
+            })
+         } else {
+            connection.query("UPDATE employee SET manager_id= ? WHERE id=?", [answer.manager, answer.employee], (err, res) => {
+               if (err) throw err
+
+            })
+         }
+
+         ViewAllEmployees()
       })
-      ViewAllEmployees()
    })
 }
 
 function done() {
-   console.log("Your Updates Have been successfully Saved! Goodbye")
+   console.log("Your updates have been successfully saved, goodbye!")
    connection.end()
 }
 
